@@ -33,7 +33,7 @@ public class Bowler {
 	fullName = full;
   	email = mail;
     }
-	
+
     public String getNickName() {
 
         return nickName;
