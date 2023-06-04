@@ -88,7 +88,7 @@ public class AddPartyView implements ActionListener, ListSelectionListener {
 		bowlerPanel.setBorder(new TitledBorder("Bowler Database"));
 
 		try {
-			bowlerdb = new Vector(BowlerFile.getBowlers());
+			bowlerdb = new Vector(BowlerDAOFactory.getBowlerDAO().getAllBowlerNickNames());
 		} catch (Exception e) {
 			System.err.println("File Error");
 			bowlerdb = new Vector();
@@ -216,13 +216,13 @@ public class AddPartyView implements ActionListener, ListSelectionListener {
 
 	public void updateNewPatron(NewPatronView newPatron) {
 		try {
-			Bowler checkBowler = BowlerFile.getBowlerInfo( newPatron.getNick() );
+			Bowler checkBowler = BowlerDAOFactory.getBowlerDAO().getBowler(newPatron.getNick());
 			if ( checkBowler == null ) {
-				BowlerFile.putBowlerInfo(
+				BowlerDAOFactory.getBowlerDAO().addBowler(
 					newPatron.getNick(),
 					newPatron.getFull(),
 					newPatron.getEmail());
-				bowlerdb = new Vector(BowlerFile.getBowlers());
+				bowlerdb = new Vector(BowlerDAOFactory.getBowlerDAO().getAllBowlerNickNames());
 				allBowlers.setListData(bowlerdb);
 				party.add(newPatron.getNick());
 				partyList.setListData(party);
