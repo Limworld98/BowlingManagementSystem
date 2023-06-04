@@ -23,6 +23,6 @@ public interface PinsetterObserver {
 	 * 
 	 * defines the method for an object torecieve a pinsetter event
 	 */
-	public void receivePinsetterEvent(PinsetterEvent pe);
+	public void updatePinsetterEvent(PinsetterEvent pe);
 };
 
