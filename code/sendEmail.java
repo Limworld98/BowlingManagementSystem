@@ -9,6 +9,7 @@ public class sendEmail extends ScoreReport{
         super(bowler, scores, games);
     }
 
+
     public void send(String recipient) {
         try {
             Socket s = new Socket("osfmail.rit.edu", 25);

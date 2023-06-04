@@ -6,7 +6,6 @@ public class sendPrintout extends ScoreReport {
         super(bowler, scores, games);
     }
 
-    @Override
     public void send() {
         PrinterJob job = PrinterJob.getPrinterJob();
 
