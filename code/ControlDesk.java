@@ -49,7 +49,7 @@ class ControlDesk extends Thread {
 	private HashSet lanes;
 
 	/** The party wait queue */
-	private Queue partyQueue;
+	private Queue<Party> partyQueue;
 
 	/** The number of lanes represented */
 	private int numLanes;
@@ -96,32 +96,6 @@ class ControlDesk extends Thread {
 
 
 	/**
-	 * Retrieves a matching Bowler from the bowler database.
-	 *
-	 * @param nickName	The NickName of the Bowler
-	 *
-	 * @return a Bowler object.
-	 *
-	 */
-
-	private Bowler registerPatron(String nickName) {
-		Bowler patron = null;
-
-		try {
-			// only one patron / nick.... no dupes, no checks
-
-			patron = BowlerFile.getBowlerInfo(nickName);
-
-		} catch (FileNotFoundException e) {
-			System.err.println("Error..." + e);
-		} catch (IOException e) {
-			System.err.println("Error..." + e);
-		}
-
-		return patron;
-	}
-
-	/**
 	 * Iterate through the available lanes and assign the paties in the wait queue if lanes are available.
 	 *
 	 */
@@ -134,17 +108,10 @@ class ControlDesk extends Thread {
 
 			if (curLane.isPartyAssigned() == false) {
 				System.out.println("ok... assigning this party");
-				curLane.assignParty(((Party) partyQueue.next()));
+				curLane.assignParty((partyQueue.next()));
 			}
 		}
 		controlDeskEventPublisher.publish((getPartyQueue()));
-	}
-
-	/**
-	 */
-
-	public void viewScores(Lane ln) {
-		// TODO: attach a LaneScoreView object to that lane
 	}
 
 	/**
@@ -155,13 +122,7 @@ class ControlDesk extends Thread {
 	 */
 
 	public void addPartyQueue(Vector partyNicks) {
-		Vector partyBowlers = new Vector();
-		for (int i = 0; i < partyNicks.size(); i++) {
-			Bowler newBowler = registerPatron(((String) partyNicks.get(i)));
-			partyBowlers.add(newBowler);
-		}
-		Party newParty = new Party(partyBowlers);
-		partyQueue.add(newParty);
+		partyQueue.add(new Party(partyNicks));
 		controlDeskEventPublisher.publish((getPartyQueue()));
 	}
 
@@ -174,9 +135,9 @@ class ControlDesk extends Thread {
 
 	public Vector getPartyQueue() {
 		Vector displayPartyQueue = new Vector();
-		for ( int i=0; i < ( (Vector)partyQueue.asVector()).size(); i++ ) {
+		for ( int i=0; i < (partyQueue.asVector()).size(); i++ ) {
 			String nextParty =
-					((Bowler) ((Vector) ((Party) partyQueue.asVector().get( i ) ).getMembers())
+					((Bowler) (((Party) partyQueue.asVector().get( i ) ).getMembers())
 							.get(0))
 							.getNickName() + "'s Party";
 			displayPartyQueue.addElement(nextParty);

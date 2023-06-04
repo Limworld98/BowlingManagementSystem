@@ -36,8 +36,37 @@ public class Party {
 	 */
 		
     public Party( Vector bowlers ) {
-		myBowlers = new Vector(bowlers);
+		this.myBowlers = createParty(bowlers);
     }
+
+	/**
+	 * Create Party
+	 *
+	 * @param bowlers	Vector of bowlers that are in this party
+	 * */
+
+	public Vector createParty(Vector bowlers) {
+		Vector partyBowlers = new Vector();
+		for (int i = 0; i < bowlers.size(); i++) {
+			Bowler newBowler = registerPatron(((String) bowlers.get(i)));
+			partyBowlers.add(newBowler);
+		}
+		return partyBowlers;
+	}
+
+	/**
+	 * Retrieves a matching Bowler from the bowler database.
+	 *
+	 * @param nickName	The NickName of the Bowler
+	 *
+	 * @return a Bowler object.
+	 *
+	 */
+
+	public Bowler registerPatron(String nickName) {
+		Bowler patron = BowlerDAOFactory.getBowlerDAO().getBowler(nickName);
+		return patron;
+	}
 
 	/**
 	 * Accessor for members in this party
