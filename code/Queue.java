@@ -10,22 +10,22 @@
  
 import java.util.Vector;
  
-public class Queue {
-	private Vector v;
+public class Queue<T> {
+	private Vector<T> v;
 	
 	/** Queue()
-	 * 
+	 *
 	 * creates a new queue
 	 */
 	public Queue() {
-		v = new Vector();
+		v = new Vector<T>();
 	}
 	
-	public Object next() {
+	public T next() {
 		return v.remove(0);
 	}
 
-	public void add(Object o) {
+	public void add(T o) {
 		v.addElement(o);
 	}
 	
@@ -33,7 +33,7 @@ public class Queue {
 		return v.size() != 0;
 	}
 
-	public Vector asVector() {
+	public Vector<T> asVector() {
 		return v;
 	}
 	
