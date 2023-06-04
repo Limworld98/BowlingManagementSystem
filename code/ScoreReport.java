@@ -39,12 +39,21 @@ public abstract class ScoreReport {
 		content += ".\n";
 		content += "\n";
 		content += "\n";
+
 		content += "Previous scores by date: \n";
+		int AvgSum = 0;
+		int AvgCnt = 0;
 		while (scoreIt.hasNext()){
 			Score score = (Score) scoreIt.next();
 			content += "  " + score.getDate() + " - " +  score.getScore();
+			AvgCnt++;
+			AvgSum += Integer.parseInt(score.getScore());
 			content += "\n";
 		}
+		content += "\n\n";
+		//New
+		content += "Average score: ";
+		content += Integer.toString(AvgSum/AvgCnt);
 		content += "\n\n";
 		content += "Thank you for your continuing patronage.";
 

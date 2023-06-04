@@ -262,7 +262,7 @@ public class Lane extends Thread implements PinsetterObserver {
 					while (scoreIt.hasNext()){
 						Bowler thisBowler = (Bowler)scoreIt.next();
 						//Need DI to client Code
-						sendEmail sr = new sendEmail( thisBowler, finalScores[myIndex++], gameNumber );
+						sendEmail sr = new sendEmail( thisBowler, finalScores[myIndex], gameNumber );
 						sendPrintout sp = new sendPrintout(thisBowler, finalScores[myIndex++], gameNumber );
 						sr.send(thisBowler.getEmail());
 						Iterator printIt = printVector.iterator();
