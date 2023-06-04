@@ -191,5 +191,9 @@ public class Pinsetter {
 	public void attach(PinsetterObserver subscriber) {
 		eventPublisher.attach(subscriber);
 	}
+
+	public void detach(PinsetterObserver subscriber) {
+		eventPublisher.detach(subscriber);
+	}
 };
 
