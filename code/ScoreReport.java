@@ -1,6 +1,6 @@
 /**
  * 
- * SMTP implementation based on code by Réal Gagnon mailto:real@rgagnon.com
+ * SMTP implementation based on code by Rï¿½al Gagnon mailto:real@rgagnon.com
  * 
  */
 
@@ -12,12 +12,12 @@ import java.net.*;
 import java.awt.*;
 import java.awt.print.*;
 
-public class ScoreReport {
+public abstract class ScoreReport {
 
 	private String content;
 	
 	public ScoreReport( Bowler bowler, int[] scores, int games ) {
-		String nick = bowler.getNick();
+		String nick = bowler.getNickName();
 		String full = bowler.getFullName();
 		Vector v = null;
 		try{
@@ -39,87 +39,30 @@ public class ScoreReport {
 		content += ".\n";
 		content += "\n";
 		content += "\n";
+
 		content += "Previous scores by date: \n";
+		int AvgSum = 0;
+		int AvgCnt = 0;
 		while (scoreIt.hasNext()){
 			Score score = (Score) scoreIt.next();
 			content += "  " + score.getDate() + " - " +  score.getScore();
+			AvgCnt++;
+			AvgSum += Integer.parseInt(score.getScore());
 			content += "\n";
 		}
+		content += "\n\n";
+		//New
+		content += "Average score: ";
+		content += Integer.toString(AvgSum/AvgCnt);
 		content += "\n\n";
 		content += "Thank you for your continuing patronage.";
 
 	}
 
-	public void sendEmail(String recipient) {
-		try {
-			Socket s = new Socket("osfmail.rit.edu", 25);
-			BufferedReader in =
-				new BufferedReader(
-					new InputStreamReader(s.getInputStream(), "8859_1"));
-			BufferedWriter out =
-				new BufferedWriter(
-					new OutputStreamWriter(s.getOutputStream(), "8859_1"));
+	public void send() {}
 
-			String boundary = "DataSeparatorString";
-
-			// here you are supposed to send your username
-			sendln(in, out, "HELO world");
-			sendln(in, out, "MAIL FROM: <mda2376@rit.edu>");
-			sendln(in, out, "RCPT TO: <" + recipient + ">");
-			sendln(in, out, "DATA");
-			sendln(out, "Subject: Bowling Score Report ");
-			sendln(out, "From: <Lucky Strikes Bowling Club>");
-
-			sendln(out, "Content-Type: text/plain; charset=\"us-ascii\"\r\n");
-			sendln(out, content + "\n\n");
-			sendln(out, "\r\n");
-
-			sendln(in, out, ".");
-			sendln(in, out, "QUIT");
-			s.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	public String getContent(){
+		return content;
 	}
-
-	public void sendPrintout() {
-		PrinterJob job = PrinterJob.getPrinterJob();
-
-		PrintableText printobj = new PrintableText(content);
-
-		job.setPrintable(printobj);
-
-		if (job.printDialog()) {
-			try {
-				job.print();
-			} catch (PrinterException e) {
-				System.out.println(e);
-			}
-		}
-
-	}
-
-	public void sendln(BufferedReader in, BufferedWriter out, String s) {
-		try {
-			out.write(s + "\r\n");
-			out.flush();
-			// System.out.println(s);
-			s = in.readLine();
-			// System.out.println(s);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void sendln(BufferedWriter out, String s) {
-		try {
-			out.write(s + "\r\n");
-			out.flush();
-			System.out.println(s);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 
 }
