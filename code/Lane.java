@@ -178,7 +178,7 @@ public class Lane extends Thread implements PinsetterObserver {
 
 		gameNumber = 0;
 
-		setter.subscribe( this );
+		setter.attach( this );
 		
 		this.start();
 	}
@@ -216,7 +216,9 @@ public class Lane extends Thread implements PinsetterObserver {
 						try{
 						Date date = new Date();
 						String dateString = "" + date.getHours() + ":" + date.getMinutes() + " " + date.getMonth() + "/" + date.getDay() + "/" + (date.getYear() + 1900);
-						ScoreHistoryFile.addScore(currentThrower.getNickName(), dateString, new Integer(cumulScores[bowlIndex][9]).toString());
+
+						ScoreHistoryFile.addScore(currentThrower.getNickName(), dateString, Integer.toString(cumulScores[bowlIndex][9]));
+
 						} catch (Exception e) {System.err.println("Exception in addScore. "+ e );} 
 					}
 
@@ -293,41 +295,50 @@ public class Lane extends Thread implements PinsetterObserver {
 	 * 
 	 * @param pe 		The pinsetter event that has been received.
 	 */
-	public void receivePinsetterEvent(PinsetterEvent pe) {
-		
-			if (pe.pinsDownOnThisThrow() >=  0) {			// this is a real throw
-				markScore(currentThrower, frameNumber + 1, pe.getThrowNumber(), pe.pinsDownOnThisThrow());
-	
-				// next logic handles the ?: what conditions dont allow them another throw?
-				// handle the case of 10th frame first
+
+	public void updatePinsetterEvent(PinsetterEvent pe) {
+			// 가독성 향상을 위해 사용
+			int pinsDown = pe.pinsDownOnThisThrow();
+			int throwNumber = pe.getThrowNumber();
+			int totalPinsDown = pe.totalPinsDown();
+			// 쓰러진 핀이 0이상일 경우 볼러가 공을 던진 것으로 간주
+			if (pinsDown >=  0) {			// this is a real throw
+				markScore(currentThrower, frameNumber + 1, throwNumber, pinsDown);
+				// 이미 이뤄진 투구에 대하여 반응하여 다음 투구 여부를 결정
+				// 10번째 프레임
 				if (frameNumber == 9) {
-					if (pe.totalPinsDown() == 10) {
+					// 스트라이크 또는 스페어 : 11번째 프레임 진행.
+					if (totalPinsDown == 10) {
 						setter.resetPins();
-						if(pe.getThrowNumber() == 1) {
+						// 1번 투구에서 핀이 10개 쓰러졌다면 스트라이크로 판정
+						if(throwNumber == 1) {
 							tenthFrameStrike = true;
 						}
 					}
-				
-					if ((pe.totalPinsDown() != 10) && (pe.getThrowNumber() == 2 && tenthFrameStrike == false)) {
+					// 핀이 1개이상 남았고, 2번 투구 수행한 상태이며, 스트라이크 상태가 아니라면 다시 못 던지도록 한다.
+					if ((totalPinsDown != 10) && (throwNumber == 2 && tenthFrameStrike == false)) {
+						canThrowAgain = false;
+						//publish( lanePublish() ); // 이거 전부 옵저버 패턴. 구독자로 등록한 각 사용자들에게 동시 전송하는 용도.
+					}
+					// 10번 프레임에서 3번 투구 수행시 종료
+					if (throwNumber == 3) {
 						canThrowAgain = false;
 						//publish( lanePublish() );
 					}
-				
-					if (pe.getThrowNumber() == 3) {
+				// 10번째 프레임 이외
+				} else {
+					// 11번째 프레임을 수행한 경우 무조건 종료
+					if (pinsDown == 10) {		// threw a strike
 						canThrowAgain = false;
 						//publish( lanePublish() );
-					}
-				} else { // its not the 10th frame
-			
-					if (pe.pinsDownOnThisThrow() == 10) {		// threw a strike
+					// 11번째 프레인이 아닌 1~9번째 프레임의 2번째 투구를 수행한 경우 종료
+					} else if (throwNumber == 2) {
 						canThrowAgain = false;
 						//publish( lanePublish() );
-					} else if (pe.getThrowNumber() == 2) {
-						canThrowAgain = false;
-						//publish( lanePublish() );
-					} else if (pe.getThrowNumber() == 3)  
+					// 3번째 투구라는 상황은 구조상 없도록 설계했지만, 구현만 해놓은 상황
+					} else if (throwNumber == 3)
 						System.out.println("I'm here...");
-				}
+					}
 			} else {								//  this is not a real throw, probably a reset
 			}
 	}
@@ -425,7 +436,7 @@ public class Lane extends Thread implements PinsetterObserver {
 	/** getScore()
 	 *
 	 * Method that calculates a bowlers score
-	 * 
+	 *
 	 * @param Cur		The bowler that is currently up
 	 * @param frame	The frame the current bowler is on
 	 * 

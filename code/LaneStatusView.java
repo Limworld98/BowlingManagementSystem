@@ -38,7 +38,7 @@ public class LaneStatusView implements ActionListener, LaneObserver, PinsetterOb
 
 		psv = new PinSetterView( laneNum );
 		Pinsetter ps = lane.getPinsetter();
-		ps.subscribe(psv);
+		ps.attach(psv);
 
 		lv = new LaneView( lane, laneNum );
 		lane.subscribe(lv);
@@ -146,8 +146,8 @@ public class LaneStatusView implements ActionListener, LaneObserver, PinsetterOb
 		}
 	}
 
-	public void receivePinsetterEvent(PinsetterEvent pe) {
-		pinsDown.setText( ( new Integer(pe.totalPinsDown()) ).toString() );
+	public void updatePinsetterEvent(PinsetterEvent pe) {
+		pinsDown.setText( Integer.toString(pe.totalPinsDown()) );
 //		foul.setText( ( new Boolean(pe.isFoulCommited()) ).toString() );
 		
 	}
