@@ -178,7 +178,7 @@ public class Lane extends Thread implements PinsetterObserver {
 
 		gameNumber = 0;
 
-		setter.subscribe( this );
+		setter.attach( this );
 		
 		this.start();
 	}
@@ -291,7 +291,8 @@ public class Lane extends Thread implements PinsetterObserver {
 	 * 
 	 * @param pe 		The pinsetter event that has been received.
 	 */
-	public void receivePinsetterEvent(PinsetterEvent pe) {
+
+	public void updatePinsetterEvent(PinsetterEvent pe) {
 			// 가독성 향상을 위해 사용
 			int pinsDown = pe.pinsDownOnThisThrow();
 			int throwNumber = pe.getThrowNumber();
